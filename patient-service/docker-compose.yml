@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  # The PostgreSQL Database Service
+  patient-service-db:
+    image: postgres:16
+    container_name: patient-service-db
+    environment:
+      POSTGRES_DB: patient_service  # Matches the database name in your JDBC URL
+      POSTGRES_USER: postgres       # Matches your application.properties
+      POSTGRES_PASSWORD: password   # Matches your application.properties
+    ports:
+      - "5433:5432" # Maps the container's 5432 port to your computer's 5433 port
+    volumes:
+      - pgdata:/var/lib/postgresql/data # Persists database data
+
+  # Your Spring Boot Application Service
+  patient-service:
+    build: . # Tells Compose to build the image from the Dockerfile in the current directory
+    container_name: patient-service-app
+    ports:
+      - "4000:4000" # Maps the container's 4000 port to your computer's 4000 port
+    depends_on:
+      - patient-service-db # Tells this service to wait for the database to start first
+
+volumes:
+  pgdata: # Defines the named volume for data persistence
